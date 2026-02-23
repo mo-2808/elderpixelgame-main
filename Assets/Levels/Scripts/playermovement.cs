@@ -1,21 +1,37 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Net.Http;
+using System.Runtime.CompilerServices;
+using JetBrains.Annotations;
 using UnityEngine;
 using UnityEngine.Rendering;
 
 public class PlayerMovement : MonoBehaviour
 {
-    public float speed = 5f;
+    
+    public Transform groundCheck;
     public Transform wallCheck;
-
+    private float baseSpeed;
+    private Coroutine speedRoutine;
     float wallJumpDir;
     float wallJumpTime = 0.2f;
     float wallJumpCounter;
     float wallJumpDuration = 0.4f;
     public Vector2 wallJumpPower =  new Vector2 (10f, 20f);
+    public Transform attackPoint;
     public float WallSlideSpeed;
+    public float attackRange = 0.5f;
+    public int attackDamage = 1;
+    public LayerMask enemyLayer;
+
+    [SerializeField] public float speed = 10f;
+    [SerializeField] public float moveSpeed = 5f;
+
 
     bool isWallJumping;
+
+    
     bool isWallSliding;
     private bool isFacingRight = true;
     private float horizontal;
@@ -23,19 +39,25 @@ public class PlayerMovement : MonoBehaviour
 
     [SerializeField] private float wallCheckDistance = 0.2f;
     [SerializeField] private LayerMask wallLayer;
+    [SerializeField] private LayerMask groundLayer;
 
     
 
-  
-
-    private void FixedUpdate()
+  public void FixedUpdate()
     {
-        float moveX = Input.GetAxis("Horizontal");
-        float moveZ = Input.GetAxis("Vertical");
+        float moveX = Input.GetAxisRaw("Horizontal");
+        float moveZ = Input.GetAxisRaw("Vertical");
 
         Vector3 move = new Vector3(moveX, 0f, moveZ);
-        transform.Translate(move * speed * Time.deltaTime);
+        transform.Translate(move * moveSpeed * Time.deltaTime);
+        if(moveX > 0 || moveX < 0)
+        {
+            transform.localScale = new Vector3(Mathf.Abs(transform.localScale.x) * moveX,transform.localScale.y,1);
+        }
+        
     }
+
+    
 
 
     public float jump = 5f;
@@ -48,6 +70,8 @@ public class PlayerMovement : MonoBehaviour
     {
         origin = transform.position;
         rb = GetComponent<Rigidbody2D>();
+
+        baseSpeed = moveSpeed;
     }
 
     public void Reset()
@@ -58,22 +82,38 @@ public class PlayerMovement : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        WallSlide();
-        WallJump();
-        if (Input.GetKeyDown(KeyCode.Space) && isGrounded)
-        {
-            rb.AddForce(Vector3.up * jump, (ForceMode2D)ForceMode.Impulse); 
-        }
+        
+    WallSlide();
+    WallJump();
 
-        horizontal = Input.GetAxisRaw("Horizontal");
+    isGrounded = Physics2D.OverlapCircle(groundCheck.position, 0.2f, groundLayer);
 
-        if(!isWallJumping)
+    if (Input.GetKeyDown(KeyCode.Space) && isGrounded)
+    {
+        rb.AddForce(Vector2.up * jump, ForceMode2D.Impulse);
+    }
+
+    if (!isWallJumping)
+    {
+        rb.linearVelocity = new Vector2(horizontal * moveSpeed, rb.linearVelocity.y);
+    }
+
+    HandleAttack();
+
+        if(Input.GetKeyDown(KeyCode.F))
         {
-            rb.linearVelocity = new Vector2(horizontal * speed, rb.linearVelocity.y);
+            Attack();
         }
     }
 
-    private void OnCollisionEnter(Collision collision)
+    IEnumerator SpeedBoost(float multiplier, float duration)
+    {
+        moveSpeed  = baseSpeed * multiplier;
+        yield return new WaitForSeconds(duration);
+        moveSpeed = baseSpeed;
+    }
+
+    private void OnCollisionEnter2D(Collision2D collision)
     {
         if (collision.gameObject.CompareTag("Ground"))
         {
@@ -82,12 +122,7 @@ public class PlayerMovement : MonoBehaviour
     }
 
 
-    public IEnumerator BoostSpeed(float boostAmount, float boostDuration)
-    {
-        speed += boostAmount;
-        yield return new WaitForSeconds(boostDuration);
-    }
-
+    
     public IEnumerator BoostJump(float boostAmount, float boostDuration)
     {
         jump += boostAmount;
@@ -95,6 +130,14 @@ public class PlayerMovement : MonoBehaviour
        
        
 
+    }
+
+    public void ApplySpeedBoost(float multiplier, float duration)
+    {
+        if(speedRoutine != null)
+        StopCoroutine(speedRoutine);
+
+        speedRoutine = StartCoroutine(SpeedBoost(multiplier, duration));
     }
 
     bool isWalled()
@@ -133,7 +176,6 @@ public class PlayerMovement : MonoBehaviour
             
         }
 
-        else
         {
             wallJumpCounter -= Time.deltaTime;
         }
@@ -157,4 +199,41 @@ public class PlayerMovement : MonoBehaviour
 
         Invoke(nameof(StopWallJump), wallJumpDuration);
     }
+
+    void HandleAttack() // f key attack + key pressing input
+    {
+        if(Input.GetKeyDown(KeyCode.F))
+        {
+            Attack();
+            Debug.Log("ATTACK PRESSED");
+        }
+
+        // void Attack()
+        // {
+        //     Collider2D hit = Physics2D.OverlapCircle(transform.position, attackRange, enemyLayer);
+
+        //     if(hit != null)
+        //     {
+        //         Vector2 direction = (hit.transform.position - transform.position).normalized;
+        //         hit.GetComponent<EnemyHealth>().TakeDamage(attackDamage, direction);
+        //     }
+        // }
+    }
+    void Attack()
+        {
+            Collider2D[] enemies = Physics2D.OverlapCircleAll(
+            attackPoint.position,
+            attackRange,
+            enemyLayer);
+
+            foreach (Collider2D enemy in enemies)
+            {
+                EnemyHealth enemyHealth = enemy.GetComponent<EnemyHealth>();
+                if(enemyHealth != null)
+                {
+                // if(enemyRb != null)
+                    enemyHealth.TakeDamage(attackDamage, (transform.localScale.x > 0 ? -1 : 1) * Vector2.right); // change transform.forward hinto the hit direction when u attack.
+                }
+            }
+        }
 }

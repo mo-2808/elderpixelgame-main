@@ -5,6 +5,8 @@ public class Guard : MonoBehaviour
     public float speed;
     private float direction = 1;
 
+    public bool canMove = true;
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
@@ -14,6 +16,10 @@ public class Guard : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if(canMove == false)
+        {
+            return;
+        }
         transform.Translate(speed * direction * Time.deltaTime, 0, 0);
     }
 
