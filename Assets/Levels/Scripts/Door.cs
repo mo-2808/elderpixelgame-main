@@ -22,7 +22,7 @@ public class Door : MonoBehaviour
         if (collision.gameObject.CompareTag("Key"))
         {
             Debug.Log("Door");
-            collider.enabled = false;
+            collider.isTrigger = true;
         }
     }
 

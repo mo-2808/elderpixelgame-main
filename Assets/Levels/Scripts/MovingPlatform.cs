@@ -1,27 +1,29 @@
+
 using UnityEngine;
 
 public class MovingPlatform : MonoBehaviour
 {
-
     public Transform pointA;
     public Transform pointB;
     public float moveSpeed = 2f;
 
-    private Vector3 nextPosition;
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    private Rigidbody2D rb;
+    private bool goingToB = true;
+
+    void Awake()
     {
-        nextPosition = pointB.position;
+        rb = GetComponent<Rigidbody2D>();
     }
 
-    // Update is called once per frame
-    void Update()
+    void FixedUpdate()
     {
-        transform.position = Vector3.MoveTowards(transform.position, nextPosition, moveSpeed * Time.deltaTime);
+        Vector2 target = goingToB ? (Vector2)pointB.position : (Vector2)pointA.position;
 
-        if(transform.position == nextPosition)
+        rb.MovePosition(Vector2.MoveTowards(rb.position, target, moveSpeed * Time.fixedDeltaTime));
+
+        if (Vector2.Distance(rb.position, target) < 0.05f)
         {
-            nextPosition = (nextPosition == pointA.position) ? pointB.position : pointA.position;
+            goingToB = !goingToB; // switch direction
         }
     }
 
@@ -41,3 +43,5 @@ public class MovingPlatform : MonoBehaviour
         }
     }
 }
+
+    
