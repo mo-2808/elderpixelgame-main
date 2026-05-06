@@ -18,10 +18,12 @@ public class PlayerMovement : MonoBehaviour
     float wallJumpTime = 0.2f;
     float wallJumpCounter;
     float wallJumpDuration = 0.4f;
+    float moveY;
     public Vector2 wallJumpPower =  new Vector2 (10f, 20f);
     public Transform attackPoint;
     public float WallSlideSpeed;
     public float attackRange = 0.5f;
+    public float climbSpeed = 5f;
     public int attackDamage = 1;
     public LayerMask enemyLayer;
 
@@ -34,6 +36,8 @@ public class PlayerMovement : MonoBehaviour
     
     bool isWallSliding;
     private bool isFacingRight = true;
+     private bool isClimbing;
+    private float vertical;
     private float horizontal;
     [HideInInspector]public Vector3 origin;
 
@@ -45,17 +49,26 @@ public class PlayerMovement : MonoBehaviour
 
   public void FixedUpdate()
     {
+        
         float moveX = Input.GetAxisRaw("Horizontal");
-        float moveZ = Input.GetAxisRaw("Vertical");
 
-        Vector3 move = new Vector3(moveX, 0f, moveZ);
-        transform.Translate(move * moveSpeed * Time.deltaTime);
-        if(moveX > 0 || moveX < 0)
-        {
-            transform.localScale = new Vector3(Mathf.Abs(transform.localScale.x) * moveX,transform.localScale.y,1);
-        }
+    if (!isClimbing)
+    {
+        transform.Translate(new Vector3(moveX, 0f, 0f) * moveSpeed * Time.deltaTime);
+    }
+
+    if (moveX != 0)
+    {
+        transform.localScale = new Vector3(
+            Mathf.Abs(transform.localScale.x) * moveX,
+            transform.localScale.y,
+            1
+        );
+    }
         
     }
+
+    
 
     
 
@@ -82,13 +95,29 @@ public class PlayerMovement : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+    
+    horizontal = Input.GetAxisRaw("Horizontal");
     WallSlide();
     WallJump();
 
+    vertical = Input.GetAxis("Vertical");
+
+    if(isClimbing && Mathf.Abs(vertical) > 0)
+        {
+            rb.gravityScale = 0f;
+
+            float moveX = Input.GetAxisRaw ("Horizontal");
+            rb.linearVelocity = new Vector2(moveX * moveSpeed, vertical * climbSpeed);
+        }
+
+        else
+        {
+           // rb.gravityScale = 1f;
+        }
+
     isGrounded = Physics2D.OverlapCircle(groundCheck.position, 0.2f, groundLayer);
 
-    if (Input.GetKeyDown(KeyCode.Space) && isGrounded)
+    if (Input.GetKeyDown(KeyCode.Space) && isGrounded && !isClimbing)
     {
         rb.AddForce(Vector2.up * jump, ForceMode2D.Impulse);
     }
@@ -122,7 +151,24 @@ public class PlayerMovement : MonoBehaviour
     }
 
 
-    
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if(collision.CompareTag("Ladder"))
+        {
+            isClimbing = true;
+        }
+    }
+
+    private void OnTriggerExit2D(Collider2D collision)
+    {
+        if (collision.CompareTag("Ladder"))
+        {
+            isClimbing = false;
+        }
+    }
+
+
+
     public IEnumerator BoostJump(float boostAmount, float boostDuration)
     {
         jump += boostAmount;
