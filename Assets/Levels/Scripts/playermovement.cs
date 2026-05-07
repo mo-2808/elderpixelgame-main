@@ -44,8 +44,9 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private float wallCheckDistance = 0.2f;
     [SerializeField] private LayerMask wallLayer;
     [SerializeField] private LayerMask groundLayer;
+    [SerializeField] private Animator anim;
 
-    
+    private float gravityScale;
 
   public void FixedUpdate()
     {
@@ -85,6 +86,8 @@ public class PlayerMovement : MonoBehaviour
         rb = GetComponent<Rigidbody2D>();
 
         baseSpeed = moveSpeed;
+
+        gravityScale = rb.gravityScale;
     }
 
     public void Reset()
@@ -112,7 +115,7 @@ public class PlayerMovement : MonoBehaviour
 
         else
         {
-           // rb.gravityScale = 1f;
+           rb.gravityScale = gravityScale;
         }
 
     isGrounded = Physics2D.OverlapCircle(groundCheck.position, 0.2f, groundLayer);
@@ -133,6 +136,8 @@ public class PlayerMovement : MonoBehaviour
         {
             Attack();
         }
+
+        anim.SetFloat("Speed", Mathf.Abs(rb.linearVelocity.x));
     }
 
     IEnumerator SpeedBoost(float multiplier, float duration)

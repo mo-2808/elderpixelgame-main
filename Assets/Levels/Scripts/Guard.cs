@@ -7,10 +7,14 @@ public class Guard : MonoBehaviour
 
     public bool canMove = true;
 
+    public Transform point1;
+    public Transform point2;
+    private Vector2 directionVector;
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        
+        directionVector = point2.position - point1.position;
     }
 
     // Update is called once per frame
@@ -20,7 +24,7 @@ public class Guard : MonoBehaviour
         {
             return;
         }
-        transform.Translate(speed * direction * Time.deltaTime, 0, 0);
+        transform.Translate(directionVector * speed * direction * Time.deltaTime);
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
