@@ -1,10 +1,14 @@
-using JetBrains.Annotations;
+using TMPro;
 using UnityEngine;
 
 public class GameManager : MonoBehaviour
 {
     public static GameManager Instance;
+
     public int elderShards = 0;
+
+    public TextMeshProUGUI elderShardText;
+
     private void Awake()
     {
         if (Instance == null)
@@ -12,30 +16,27 @@ public class GameManager : MonoBehaviour
             Instance = this;
             DontDestroyOnLoad(gameObject);
         }
-            
-        
         else
         {
             Destroy(gameObject);
         }
+    }
 
-    
+    void Start()
+    {
+        UpdateText();
     }
 
     public void AddElderShards(int amount)
     {
         elderShards += amount;
+        UpdateText();
+
         Debug.Log("Elder Shards: " + elderShards);
     }
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
-    {
-        
-    }
 
-    // Update is called once per frame
-    void Update()
+    void UpdateText()
     {
-        
+        elderShardText.text = elderShards.ToString();
     }
 }
