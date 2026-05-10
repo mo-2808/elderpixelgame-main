@@ -4,6 +4,7 @@ public class EnemyHealth : MonoBehaviour
 {
     public int maxHealth = 3;
     private int currentHealth;
+    public int shardReward = 5;
     public float knockbackForce = 5f;
     private Rigidbody2D rb;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -39,6 +40,10 @@ public class EnemyHealth : MonoBehaviour
 
     void Die()
     {
+        GameManager.Instance.AddElderShards(shardReward);
+
+        Debug.Log("Enemy defeated +" + shardReward + " shards");
+
         Destroy(gameObject);
     }
 }

@@ -35,4 +35,5 @@ public class FallingSpinningBrick : MonoBehaviour
             other.GetComponent<PlayerMovement>().Reset();
         }
     }
+
 }

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Net.Http;
 using System.Runtime.CompilerServices;
 using JetBrains.Annotations;
+using TMPro;
 using UnityEngine;
 using UnityEngine.Rendering;
 
@@ -48,28 +49,9 @@ public class PlayerMovement : MonoBehaviour
 
     private float gravityScale;
 
-  public void FixedUpdate()
-    {
-        
-        float moveX = Input.GetAxisRaw("Horizontal");
+  
 
-    if (!isClimbing)
-    {
-        transform.Translate(new Vector3(moveX, 0f, 0f) * moveSpeed * Time.deltaTime);
-    }
 
-    if (moveX != 0)
-    {
-        transform.localScale = new Vector3(
-            Mathf.Abs(transform.localScale.x) * moveX,
-            transform.localScale.y,
-            1
-        );
-    }
-        
-    }
-
-    
 
     
 
@@ -102,6 +84,15 @@ public class PlayerMovement : MonoBehaviour
     horizontal = Input.GetAxisRaw("Horizontal");
     WallSlide();
     WallJump();
+
+    if(horizontal > 0)
+        {
+            transform.localScale = new Vector3(1, 1, 1);
+        }
+    else if (horizontal < 0)
+        {
+            transform.localScale = new Vector3(-1, 1, 1);
+        }
 
     vertical = Input.GetAxis("Vertical");
 

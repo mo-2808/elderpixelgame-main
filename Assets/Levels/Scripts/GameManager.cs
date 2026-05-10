@@ -33,6 +33,8 @@ public class GameManager : MonoBehaviour
         UpdateText();
 
         Debug.Log("Elder Shards: " + elderShards);
+
+        elderShardText.text = "Elder Shards: " + elderShards;
     }
 
     void UpdateText()
