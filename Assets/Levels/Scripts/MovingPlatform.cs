@@ -23,7 +23,7 @@ public class MovingPlatform : MonoBehaviour
 
         if (Vector2.Distance(rb.position, target) < 0.05f)
         {
-            goingToB = !goingToB; // switch direction
+            goingToB = !goingToB; // switches direction
         }
     }
 
@@ -32,6 +32,7 @@ public class MovingPlatform : MonoBehaviour
         if (collision.gameObject.CompareTag("Player"))
         { 
             collision.gameObject.transform.parent = transform;
+            // SetGlobalScale(collision.gameObject.transform, collision.gameObject.transform.localScale);
         }
     }
 
@@ -42,6 +43,12 @@ public class MovingPlatform : MonoBehaviour
             collision.gameObject.transform.parent = null;
         }
     }
+
+    // public void SetGlobalScale(Transform transform, Vector3 globalScale)
+    // {
+    //     transform.localScale = Vector3.one;
+    //     transform.localScale = new Vector3 (globalScale.x/transform.lossyScale.x, globalScale.y/transform.lossyScale.y, globalScale.z/transform.lossyScale.z);
+    // }
 }
 
     

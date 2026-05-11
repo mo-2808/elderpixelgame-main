@@ -46,6 +46,8 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private LayerMask wallLayer;
     [SerializeField] private LayerMask groundLayer;
     [SerializeField] private Animator anim;
+    [SerializeField] private Animator swordAnim;
+
 
     private float gravityScale;
 
@@ -248,6 +250,7 @@ public class PlayerMovement : MonoBehaviour
         {
             Attack();
             Debug.Log("ATTACK PRESSED");
+            swordAnim.SetTrigger("Swing");
         }
 
         // void Attack()

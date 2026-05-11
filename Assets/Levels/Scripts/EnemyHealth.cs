@@ -40,7 +40,8 @@ public class EnemyHealth : MonoBehaviour
 
     void Die()
     {
-        GameManager.Instance.AddElderShards(shardReward);
+        FindFirstObjectByType<GameManager>().AddElderShards(shardReward);
+       // GameManager.Instance.AddElderShards(shardReward);
 
         Debug.Log("Enemy defeated +" + shardReward + " shards");
 
