@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.Events;
 
 public class EnemyHealth : MonoBehaviour
 {
@@ -7,6 +8,9 @@ public class EnemyHealth : MonoBehaviour
     public int shardReward = 5;
     public float knockbackForce = 5f;
     private Rigidbody2D rb;
+
+    [SerializeField] private UnityEvent deathEvent;
+    [SerializeField] private UnityEvent respawnEvent;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
@@ -26,16 +30,12 @@ public class EnemyHealth : MonoBehaviour
         {
             Die();
         }
-        Invoke("StartMoving", 0.5f);
     }
+    
     // Update is called once per frame
     void Update()
     {
-        
-    }
-    void StartMoving()
-    {
-        GetComponent<Guard>().canMove = true;
+        DoRespawnTimer();
     }
 
     void Die()
@@ -45,6 +45,40 @@ public class EnemyHealth : MonoBehaviour
 
         Debug.Log("Enemy defeated +" + shardReward + " shards");
 
-        Destroy(gameObject);
+        ToggleState(false);
+        deathEvent?.Invoke();
+        _isDead = true;
+    }
+
+    private void Respawn()
+    {
+        respawnEvent?.Invoke();
+    }
+
+    private float _capturedTime;
+    private bool _isDead;
+    [SerializeField] private float respawnTime = 20f;
+    [SerializeField] private BoxCollider2D collision;
+    [SerializeField] private SpriteRenderer spriteRenderer;
+
+    private void DoRespawnTimer()
+    {
+        if (_isDead)
+        {
+            _capturedTime += Time.deltaTime;
+            if (_capturedTime > respawnTime)
+            {
+                _capturedTime = 0f;
+                _isDead = false;
+                ToggleState(true);
+                Respawn();
+            }
+        }
+    }
+
+    private void ToggleState(bool state)
+    {
+        collision.enabled = state;
+        spriteRenderer.enabled = state;
     }
 }

@@ -520,8 +520,42 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a0b7cf280b49046ada816dbd1a456e2d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxHealth: 10
+  maxHealth: 1
+  shardReward: 5
   knockbackForce: 10
+  deathEvent:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 4363522006425163763}
+        m_TargetAssemblyTypeName: Guard, Assembly-CSharp
+        m_MethodName: OnDied
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+  respawnEvent:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 4363522006425163763}
+        m_TargetAssemblyTypeName: Guard, Assembly-CSharp
+        m_MethodName: OnRespawn
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+  respawnTime: 10
+  collision: {fileID: 6232395531509210379}
+  spriteRenderer: {fileID: 104939027088267829}
 --- !u!114 &3512028565488967987
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -20,10 +20,8 @@ public class Guard : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if(canMove == false)
-        {
-            return;
-        }
+        if(canMove == false) return;
+
         transform.Translate(directionVector * speed * direction * Time.deltaTime);
     }
 
@@ -37,5 +35,17 @@ public class Guard : MonoBehaviour
         {
             collision.gameObject.GetComponent<PlayerMovement>().Reset();
         }
+    }
+
+    public void OnDied()
+    {
+        canMove = false;
+        Debug.Log("Guard Died");
+    }
+
+    public void OnRespawn()
+    {
+        canMove = true;
+        Debug.Log("Guard Respawned");
     }
 }
