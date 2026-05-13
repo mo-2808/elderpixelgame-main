@@ -62,9 +62,23 @@ public class PlayerMovement : MonoBehaviour
     private Rigidbody2D rb;
     private bool isGrounded = true;
 
+    private AudioSource audioSource;
+    public AudioClip steps;
+    public AudioClip swing;
+
+    public void Footsteps()
+    {
+        if (isGrounded)
+        {
+            audioSource.clip = steps;
+            audioSource.Play();
+        }
+        
+    }
+
 
     // Start is called before the first frame update
-    void Start()
+    private void Start()
     {
         origin = transform.position;
         rb = GetComponent<Rigidbody2D>();
@@ -72,6 +86,7 @@ public class PlayerMovement : MonoBehaviour
         baseSpeed = moveSpeed;
 
         gravityScale = rb.gravityScale;
+        audioSource = GetComponent<AudioSource>();
     }
 
     public void Reset()
@@ -89,11 +104,11 @@ public class PlayerMovement : MonoBehaviour
 
     if(horizontal > 0)
         {
-            transform.localScale = new Vector3(1, 1, 1);
+            transform.localScale = new Vector3(-1, 1, 1);
         }
     else if (horizontal < 0)
         {
-            transform.localScale = new Vector3(-1, 1, 1);
+            transform.localScale = new Vector3(1, 1, 1);
         }
 
     vertical = Input.GetAxis("Vertical");
@@ -251,6 +266,9 @@ public class PlayerMovement : MonoBehaviour
             Attack();
             Debug.Log("ATTACK PRESSED");
             swordAnim.SetTrigger("Swing");
+            audioSource.clip = swing;
+            audioSource.Play();
+
         }
 
         // void Attack()

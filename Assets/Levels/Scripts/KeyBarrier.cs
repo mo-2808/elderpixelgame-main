@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class KeyBarrier : MonoBehaviour
 {
-    public int requiredShards = 30;
+    public int requiredShards = 15;
     public GameObject barrierVisual;
 
     private bool opened = false;
